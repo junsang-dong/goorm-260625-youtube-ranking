@@ -16,7 +16,7 @@ function yesterdayDate() {
   return d.toISOString().slice(0, 10)
 }
 
-const RANKING_LIMIT = 15
+const RANKING_LIMIT = 48
 
 async function fetchFromYouTube(categoryId, regionCode, limit) {
   const category = getCategoryById(categoryId)

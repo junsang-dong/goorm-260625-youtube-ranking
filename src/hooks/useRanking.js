@@ -10,7 +10,7 @@ export function useRanking() {
     async function fetchRanking() {
       setLoading(true)
       try {
-        const params = new URLSearchParams({ category, region, limit: '15' })
+        const params = new URLSearchParams({ category, region, limit: '48' })
         const res = await fetch(`/api/ranking?${params}`)
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Failed to fetch ranking')

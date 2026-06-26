@@ -3,6 +3,7 @@ import ChannelModal from '../components/channel/ChannelModal'
 import LoadingSkeleton from '../components/common/LoadingSkeleton'
 import FavoriteButton from '../components/common/FavoriteButton'
 import { useFavoriteStore } from '../store/favoriteStore'
+import { useT } from '../i18n/useT'
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
@@ -12,6 +13,7 @@ export default function SearchPage() {
   const [error, setError] = useState(null)
   const [selectedChannelId, setSelectedChannelId] = useState(null)
   const { fetchFavorites } = useFavoriteStore()
+  const { t } = useT()
 
   useEffect(() => {
     fetchFavorites()
@@ -48,28 +50,28 @@ export default function SearchPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">채널 검색</h1>
-        <p className="mt-1 text-sm text-zinc-400">채널명으로 YouTube 채널을 검색하세요.</p>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('search.title')}</h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t('search.subtitle')}</p>
       </div>
 
       <input
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="채널명 입력..."
-        className="w-full rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder-zinc-500 focus:border-red-500 focus:outline-none"
+        placeholder={t('search.placeholder')}
+        className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 focus:border-red-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder-zinc-500"
       />
 
       {loading && <LoadingSkeleton count={3} />}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-400">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
       {!loading && !error && debouncedQuery && results.length === 0 && (
-        <p className="text-center text-zinc-500">검색 결과가 없습니다.</p>
+        <p className="text-center text-zinc-500">{t('search.noResults')}</p>
       )}
 
       <div className="space-y-3">
@@ -77,7 +79,7 @@ export default function SearchPage() {
           <div
             key={ch.channelId}
             onClick={() => setSelectedChannelId(ch.channelId)}
-            className="flex cursor-pointer items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition-colors hover:border-red-500/50"
+            className="flex cursor-pointer items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-red-500/50 dark:border-zinc-800 dark:bg-zinc-900"
           >
             <img
               src={ch.thumbnailUrl}
@@ -85,7 +87,7 @@ export default function SearchPage() {
               className="h-12 w-12 rounded-full object-cover"
             />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate font-medium text-white">{ch.title}</h3>
+              <h3 className="truncate font-medium text-zinc-900 dark:text-white">{ch.title}</h3>
               <p className="truncate text-sm text-zinc-500">{ch.description}</p>
             </div>
             <FavoriteButton channel={ch} />

@@ -7,9 +7,9 @@ export function useInsight() {
   const [error, setError] = useState(null)
   const [fromCache, setFromCache] = useState(false)
 
-  const fetchInsight = useCallback(async (channelId, channelData) => {
+  const fetchInsight = useCallback(async (channelId, channelData, lang = 'en', limitMessage) => {
     if (!canRequestInsight()) {
-      setError('오늘 AI 인사이트 조회 한도(10회)에 도달했습니다.')
+      setError(limitMessage || 'Daily AI insight limit reached.')
       return
     }
 
@@ -22,7 +22,7 @@ export function useInsight() {
       const res = await fetch('/api/insight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channelId, channelData }),
+        body: JSON.stringify({ channelId, channelData, lang }),
       })
 
       if (!res.ok) {
