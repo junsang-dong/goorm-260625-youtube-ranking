@@ -3,8 +3,8 @@ import { jsonResponse, errorResponse } from '../lib/api-utils.js'
 
 export const config = { runtime: 'edge' }
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent`
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions'
 
 const SUPPORTED_LANGS = ['en', 'ko', 'ja', 'zh']
 
@@ -149,27 +149,32 @@ function streamCached(text) {
   })
 }
 
-async function streamGemini(prompt) {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
+async function streamOpenAI(prompt) {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OPENAI_API_KEY is not set')
 
-  const res = await fetch(`${GEMINI_URL}?key=${apiKey}&alt=sse`, {
+  const res = await fetch(OPENAI_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
+      model: OPENAI_MODEL,
+      stream: true,
+      messages: [{ role: 'user', content: prompt }],
     }),
   })
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err?.error?.message || `Gemini API error: ${res.status}`)
+    throw new Error(err?.error?.message || `OpenAI API error: ${res.status}`)
   }
 
   return res.body
 }
 
-function parseGeminiSSE(stream) {
+function parseOpenAISSE(stream) {
   const decoder = new TextDecoder()
   const encoder = new TextEncoder()
   let buffer = ''
@@ -194,8 +199,7 @@ function parseGeminiSSE(stream) {
               if (!data || data === '[DONE]') continue
               try {
                 const json = JSON.parse(data)
-                const text =
-                  json.candidates?.[0]?.content?.parts?.[0]?.text || ''
+                const text = json.choices?.[0]?.delta?.content || ''
                 if (text) {
                   fullText += text
                   controller.enqueue(encoder.encode(text))
@@ -246,8 +250,8 @@ export default async function handler(req, context) {
     }
 
     const prompt = buildPrompt(channelData, lang)
-    const geminiStream = await streamGemini(prompt)
-    const { readable, getFullText } = parseGeminiSSE(geminiStream)
+    const openaiStream = await streamOpenAI(prompt)
+    const { readable, getFullText } = parseOpenAISSE(openaiStream)
 
     const [clientStream, saveStream] = readable.tee()
     const reader = saveStream.getReader()
