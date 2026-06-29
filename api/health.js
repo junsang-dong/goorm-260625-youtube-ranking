@@ -1,6 +1,8 @@
 import { getSql } from '../lib/db/client.js'
 import { jsonResponse, errorResponse } from '../lib/api-utils.js'
 
+export const config = { runtime: 'edge' }
+
 export default async function handler() {
   try {
     const sql = getSql()

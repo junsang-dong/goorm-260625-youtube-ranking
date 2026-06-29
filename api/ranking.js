@@ -6,6 +6,8 @@ import { getPopularVideos, getChannels, parseCount } from '../lib/youtube/client
 import { calcPopularityScore } from '../src/utils/popularityScore.js'
 import { calcRankChange, buildYesterdayRankMap } from '../lib/ranking/diff.js'
 
+export const config = { runtime: 'edge' }
+
 function todayDate() {
   return new Date().toISOString().slice(0, 10)
 }

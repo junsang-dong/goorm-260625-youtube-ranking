@@ -8,6 +8,8 @@ import {
   formatStat,
 } from '../../lib/youtube/client.js'
 
+export const config = { runtime: 'edge' }
+
 function calcEngagement(avgViews, subscribers) {
   if (!subscribers || subscribers === 0 || !avgViews) return null
   return ((avgViews / subscribers) * 100).toFixed(2)

@@ -1,6 +1,8 @@
 import { jsonResponse, errorResponse } from '../lib/api-utils.js'
 import { searchChannels } from '../lib/youtube/client.js'
 
+export const config = { runtime: 'edge' }
+
 export default async function handler(req) {
   if (req.method !== 'GET') {
     return errorResponse('Method not allowed', 405)

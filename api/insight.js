@@ -1,6 +1,8 @@
 import { getSql } from '../lib/db/client.js'
 import { jsonResponse, errorResponse } from '../lib/api-utils.js'
 
+export const config = { runtime: 'edge' }
+
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent`
 
@@ -214,7 +216,7 @@ function parseGeminiSSE(stream) {
   }
 }
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== 'POST') {
     return errorResponse('Method not allowed', 405)
   }
@@ -251,7 +253,7 @@ export default async function handler(req) {
     const reader = saveStream.getReader()
     const chunks = []
 
-    ;(async () => {
+    const savePromise = (async () => {
       try {
         while (true) {
           const { done, value } = await reader.read()
@@ -272,6 +274,11 @@ export default async function handler(req) {
         console.error('Insight save error:', e)
       }
     })()
+
+    // Keep the function alive on Edge until the cache write finishes.
+    if (context && typeof context.waitUntil === 'function') {
+      context.waitUntil(savePromise)
+    }
 
     return new Response(clientStream, {
       headers: {
