@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useChannel } from '../../hooks/useChannel'
 import { formatNumber } from '../../utils/popularityScore'
 import FavoriteButton from '../common/FavoriteButton'
@@ -118,7 +119,7 @@ export default function ChannelModal({ channelId, onClose }) {
                 </div>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 flex flex-wrap gap-2">
                 <a
                   href={channel.youtubeUrl}
                   target="_blank"
@@ -127,6 +128,13 @@ export default function ChannelModal({ channelId, onClose }) {
                 >
                   {t('modal.viewOnYoutube')}
                 </a>
+                <Link
+                  to={`/intelligence?channelId=${channel.channelId}`}
+                  onClick={onClose}
+                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-red-600 px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                >
+                  {t('modal.deepAnalysis')}
+                </Link>
               </div>
 
               <AIInsightPanel channel={channel} />

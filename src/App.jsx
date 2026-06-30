@@ -4,6 +4,7 @@ import Footer from './components/layout/Footer.jsx'
 import HomePage from './pages/HomePage.jsx'
 import SearchPage from './pages/SearchPage.jsx'
 import FavoritesPage from './pages/FavoritesPage.jsx'
+import ChannelIntelligencePage from './pages/ChannelIntelligencePage.jsx'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/intelligence" element={<ChannelIntelligencePage />} />
         </Routes>
       </main>
       <Footer />

@@ -12,6 +12,7 @@ export default function Header() {
   const NAV = [
     { to: '/', label: t('nav.home') },
     { to: '/search', label: t('nav.search') },
+    { to: '/intelligence', label: t('nav.intelligence') },
     { to: '/favorites', label: t('nav.favorites') },
   ]
 
